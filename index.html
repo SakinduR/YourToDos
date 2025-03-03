@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+    <head>   
+        <title>MY TO DO LIST</title>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+    </head>
+    <body>
+        <header>
+            <span class="todo">MY TO DO LIST</span>
+            <span class="name">Sakindu</span>
+            <img src="doge.png" alt="DOGE" style="float:right;width:42px;height:42px;">
+        </header>
+        <hr><br><br>
+        
+        <form id = "add-activity-form">
+
+        <h2 style="text-align:center;font-size:200%;">
+        <label for="activity">Enter your to do:</label>
+        <input type="text" id="activity" name="activity">
+        <button type="submit">Submit</button>
+        </h2>
+        </form>
+        <ul id = "activity-list" class="cards"></ul>
+        <script type="module">
+        
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
+        import { getFirestore, collection, getDocs, query , addDoc , deleteDoc , doc } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-lite.js';
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyDdo2Q57xHZaFMuRNZHgMZnpKcmXHqBirs",
+            authDomain: "mytodos-5793c.firebaseapp.com",
+            projectId: "mytodos-5793c",
+            storageBucket: "mytodos-5793c.appspot.com",
+            messagingSenderId: "649918508166",
+            appId: "1:649918508166:web:c93789a1576491d4f53507",
+            measurementId: "G-L1XBSX718Y"
+        
+        };
+
+        console.log("came here!!")
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        const activityList = document.getElementById("activity-list");
+        const form = document.getElementById("add-activity-form");
+
+        function renderActivity(doc){
+            let li = document.createElement('li');
+            let activity = document.createElement('span');
+            let cross = document.createElement('div');
+
+            li.setAttribute('data-id', doc.id);
+            activity.textContent = doc.data().activity;
+            cross.textContent = " X";
+
+            li.appendChild(activity);
+            li.appendChild(cross);
+
+            activityList.appendChild(li);
+        }
+
+        const q = query(collection(db, "activities")    );
+
+        getDocs(q).then((snapshot)=>{
+            snapshot.docs.forEach(doc => {
+                renderActivity(doc);                
+            });
+        })
+
+        form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+
+        const activity = document.getElementById('activity').value;
+
+        
+            try {
+            // Save data to Firestore collection
+            const docRef = await addDoc(collection(db, 'activities'), {
+                activity: activity
+            });
+            console.log('Document written with ID: ', docRef.id);
+
+            // Clear form after successful submission
+            form.reset();
+            } catch (error) {
+            console.error('Error adding document: ', error);
+            }
+        });
+
+
+
+
+        
+
+        // let todos = [];
+
+        // function loadTodos() {
+        //     document.getElementById("todos").innerHTML = todos.map(item => (`    
+        //     <div key="${item.id}" style="border: 2px solid powderblue; padding: 30px; margin: 100px">
+        //         <button id="close" style="float:right;"" onclick="closeTodo(${item.id})"><img src="close.jpg" alt="close" style="width:20px;height:20px;"></button>
+        //         <h2>${item.text}</h2>  
+        //         </div>
+        //     `)) 
+        // }
+        // let i=0;
+        // function addTodo() {
+            
+        //     let activity=document.querySelector("#activity");     
+        //     i += 1
+        //     todos.push({
+        //         text: activity.value,
+        //         id: i 
+        //     });
+        //     loadTodos();
+        // }
+
+        // function closeTodo(id) {
+        //     todos = todos.filter(x=>x.id!==id)
+        //     loadTodos();
+        // }
+
+        
+        
+        </script>
+    </body>
+</html>
